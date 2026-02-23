@@ -12,9 +12,6 @@ bench/BenchmarkDotNet.Artifacts
 .vscode
 .idea
 
-# unity
-*.meta
-
 # temp files
 *~
 *.swp
