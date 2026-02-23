@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <OutputPath>..\..\bin\$(Configuration)</OutputPath>
     <LangVersion>9</LangVersion>
 
@@ -22,5 +22,25 @@
     <PackageTags>json</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
+
+  <Target Name="CopyAfterBuild"
+          AfterTargets="Build"
+          Condition="'$(TargetFramework)' == 'netstandard2.1'">
+
+    <PropertyGroup>
+      <UnityPluginDir>
+        $(MSBuildProjectDirectory)\..\..\unity\voorhees\Packages\com.grahamboree.voorhees\Plugins
+      </UnityPluginDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_FilesToCopy Include="$(TargetDir)$(AssemblyName).dll" />
+      <_FilesToCopy Include="$(TargetDir)$(AssemblyName).pdb" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_FilesToCopy)"
+          DestinationFolder="$(UnityPluginDir)"
+          SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

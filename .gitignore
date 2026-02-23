@@ -1,7 +1,6 @@
 # Visual Studio stuff
 obj
 bin
-packages
 *.suo
 *.userprefs*
 voorhees.sln.DotSettings.user
