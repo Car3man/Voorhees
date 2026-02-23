@@ -36,7 +36,8 @@ namespace Voorhees.Internal {
                     if (serializableProperty) {
                         props.Add(new PropertyMetadata {
                             Info = propertyInfo,
-                            IsField = false
+                            IsField = false,
+                            KeyName = GetKeyName(propertyInfo)
                         });
                     }
                 }
@@ -45,7 +46,8 @@ namespace Voorhees.Internal {
                     if (!Attribute.IsDefined(fieldInfo, typeof(JsonIgnoreAttribute))) {
                         props.Add(new PropertyMetadata {
                             Info = fieldInfo,
-                            IsField = true
+                            IsField = true,
+                            KeyName = GetKeyName(fieldInfo)
                         });
                     }
                 }
@@ -127,19 +129,24 @@ namespace Voorhees.Internal {
                         continue;
                     }
 
-                    objectMetadata.Properties.Add(propertyInfo.Name, new PropertyMetadata {
+                    string keyName = GetKeyName(propertyInfo);
+                    objectMetadata.Properties.Add(keyName, new PropertyMetadata {
                         Info = propertyInfo,
                         Type = propertyInfo.PropertyType,
-                        Ignored = Attribute.IsDefined(propertyInfo, typeof(JsonIgnoreAttribute))
+                        Ignored = Attribute.IsDefined(propertyInfo, typeof(JsonIgnoreAttribute)),
+                        KeyName = keyName
                     });
                 }
 
-                foreach (var fieldInfo in type.GetFields()) {
-                    objectMetadata.Properties.Add(fieldInfo.Name, new PropertyMetadata {
+                foreach (var fieldInfo in type.GetFields())
+                {
+                    string keyName = GetKeyName(fieldInfo);
+                    objectMetadata.Properties.Add(keyName, new PropertyMetadata {
                         Info = fieldInfo,
                         IsField = true,
                         Type = fieldInfo.FieldType,
-                        Ignored = Attribute.IsDefined(fieldInfo, typeof(JsonIgnoreAttribute))
+                        Ignored = Attribute.IsDefined(fieldInfo, typeof(JsonIgnoreAttribute)),
+                        KeyName = keyName
                     });
                 }
 
@@ -147,6 +154,10 @@ namespace Voorhees.Internal {
             }
 
             return cachedObjectMetadata[type];
+        }
+        
+        internal static string GetKeyName(MemberInfo memberInfo) {
+            return Attribute.GetCustomAttribute(memberInfo, typeof(JsonKeyAttribute)) is JsonKeyAttribute attribute ? attribute.Key : memberInfo.Name;
         }
         
         /////////////////////////////////////////////////
@@ -168,6 +179,7 @@ namespace Voorhees.Internal {
             public bool IsField;
             public Type Type;
             public bool Ignored;
+            public string KeyName;
         }
         static readonly Dictionary<Type, List<PropertyMetadata>> typeProperties = new();
 

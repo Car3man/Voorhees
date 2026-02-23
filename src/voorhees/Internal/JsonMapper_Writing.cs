@@ -155,12 +155,12 @@ namespace Voorhees {
                 if (propertyMetadata.IsField) {
                     var fieldInfo = (FieldInfo)propertyMetadata.Info;
                     object value = fieldInfo.GetValue(obj);
-                    tokenWriter.WriteObjectKey(fieldInfo.Name);
+                    tokenWriter.WriteObjectKey(propertyMetadata.KeyName);
                     WriteValue(value, fieldInfo.FieldType, value != null ? value.GetType() : fieldInfo.FieldType, tokenWriter);
                 } else {
                     var propertyInfo = (PropertyInfo)propertyMetadata.Info;
                     object value = propertyInfo.GetValue(obj);
-                    tokenWriter.WriteObjectKey(propertyInfo.Name);
+                    tokenWriter.WriteObjectKey(propertyMetadata.KeyName);
                     WriteValue(value, propertyInfo.PropertyType, value.GetType(), tokenWriter);
                 }
 
